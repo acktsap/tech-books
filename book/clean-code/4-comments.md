@@ -7,7 +7,7 @@
   - [Good Comments](#good-comments)
     - [Legal Comments](#legal-comments)
     - [Informative Comments](#informative-comments)
-    - [Explanation Of Intent](#explanation-of-intent)
+    - [Explanation of Intent](#explanation-of-intent)
     - [Clarification](#clarification)
     - [Warning of Consequences](#warning-of-consequences)
     - [TODO Comments](#todo-comments)
@@ -41,16 +41,15 @@
 
 ## Comments Do Not Make Up for Bad Code
 
-- 안좋은 코드를 보완하기 위해서 주석을 작성 ㄴㄴ 코드 재작성을해.
+- 주석은 나쁜 코드를 덮기 위해서 있는게 아니다. 주석을 달아야 할거 같으면 새로 짜라.
 
 ## Explain Yourself in Code
 
-- 코드 스스로 설명해라.
+- 코드의 의도를 표현해라.
   ```java
   // bad
   // Check to see if the employee is eligible for full benefits
-  if ((employee.flags & HOURLY_FLAG) &&
-    (employee.age > 65))
+  if ((employee.flags & HOURLY_FLAG) && (employee.age > 65))
 
   // good
   if (employee.isEligibleForFullBenefits())
@@ -58,12 +57,11 @@
 
 ## Good Comments
 
-- 가끔은 좋은 주석이 있긴 하다. 하지만 제일 좋은 주석은 작성하지 않는 주석이라는 것을 명심할 것.
+- 가끔은 필요한 주석이 있긴 하다. 하지만 주석이 없는게 최고인걸 명심할 것.
 
 ### Legal Comments
 
-- copyright 등 법적인 내용을 표현할 때는 필요.
-- 이렇게 작성할 때도 contract 전문을 작성하진 말고 그걸 참고해라고 할 것.
+- 라이선스 정보 등을 위해 다는 주석은 필요. 그렇다고 라이선스 전문을 쓰진 말 것.
   ```java
   // Copyright (C) 2003,2004,2005 by Object Mentor, Inc. All rights reserved.
   // Released under the terms of the GNU General Public License version 2 or later.
@@ -71,26 +69,47 @@
 
 ### Informative Comments
 
-- 정보성 주석이 필요한 경우가 있음 (eg. 정규식)
+- 정보정 주석은 도움이 되긴 한다. But 함수명을 바꾸는게 최고.
   ```java
-  // format matched kk:mm:ss EEE, MMM dd, yyyy
-  Pattern timeMatcher = Pattern.compile(
-    "\\d*:\\d*:\\d* \\w*, \\w* \\d*, \\d*");
+  // not bad
+  // Returns an instance of the Responder being tested.
+  protected abstract Responder responderInstance();
+
+  // good
+  protected abstract Responder responderBeingTested();
   ```
 
-### Explanation Of Intent
+### Explanation of Intent
 
-- 코드의 의도를 표현할 필요가 있을 수 있음.
+- 결정사항 등 의도를 파악하기 위한 주석은 도움이 됨.
   ```java
-  public int compareTo(Object o)
-  {
-    if(o instanceof WikiPagePath) {
+  public int compareTo(Object o) {
+    if (o instanceof WikiPagePath) {
       WikiPagePath p = (WikiPagePath) o;
       String compressedName = StringUtil.join(names, "");
       String compressedArgumentName = StringUtil.join(p.names, "");
       return compressedName.compareTo(compressedArgumentName);
     }
     return 1; // we are greater because we are the right type.
+  }
+  ```
+  ```java
+  public void testConcurrentAddWidgets() throws Exception {
+    WidgetBuilder widgetBuilder = new WidgetBuilder(new Class[]{BoldWidget.class});
+    String text = "'''bold text'''";
+    ParentWidget parent = new BoldWidget(new MockWidgetRoot(), "'''bold text'''");
+    AtomicBoolean failFlag = new AtomicBoolean();
+    failFlag.set(false);
+
+    //This is our best attempt to get a race condition
+    //by creating large number of threads.
+    for (int i = 0; i < 25000; i++) {
+      WidgetBuilderThread widgetBuilderThread =
+      new WidgetBuilderThread(widgetBuilder, text, parent, failFlag);
+      Thread thread = new Thread(widgetBuilderThread);
+      thread.start();
+    }
+    assertEquals(false, failFlag.get());
   }
   ```
 

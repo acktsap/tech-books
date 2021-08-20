@@ -19,7 +19,7 @@
   - [Use Solution Domain Names](#use-solution-domain-names)
   - [Use Problem Domain Names](#use-problem-domain-names)
   - [Add Meaningful Context](#add-meaningful-context)
-  - [Don’t Add Gratuitous Context](#dont-add-gratuitous-context)
+  - [Don’t Add Gratuitous Context (불필요한 맥락)](#dont-add-gratuitous-context-불필요한-맥락)
   - [Final Words](#final-words)
 
 ## Introduction
@@ -201,7 +201,7 @@
 
 - 명사형으로 짓자.
   - good : Customer, WikiPage, Account, AddressParser
-  - bad??? : Manager, Processor, Data
+  - bad : Manager, Processor, Data -> 명료하지 않음
 
 ## Method Names
 
@@ -232,7 +232,7 @@
 ## Don't Pun (말장난)
 
 - 하나의 단어를 두개 이상의 목적으로 사용하지 말라.
-  - bad : add method가 많다고 의미가 다른 add를 추가
+  - eg. 기존 값 두 개를 더해서 새로운 값 생성을 하는 걸 add로 썼다가 list.add처럼 ㄴㄴ. insert/append가 맞음
 
 ## Use Solution Domain Names
 
@@ -336,6 +336,7 @@
       return String.format(
         "There %s %s %s%s", verb, number, candidate, pluralModifier );
     }
+
     private void createPluralDependentMessageParts(int count) {
       if (count == 0) {
         thereAreNoLetters();
@@ -366,7 +367,7 @@
   }
   ```
 
-## Don’t Add Gratuitous Context
+## Don’t Add Gratuitous Context (불필요한 맥락)
 
 - Context의 경우 짧은 이름으로도 명확하다면 더 길게 할 필요 없음.
   - bad : MailingAddress, GSDAccountAddress
