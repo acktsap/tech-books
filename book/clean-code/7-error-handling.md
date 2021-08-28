@@ -65,6 +65,8 @@ private DeviceHandle getHandle(DeviceID id) {
 }
 ```
 
+> 여전히 try-catch를 분리하는게 좋은지는 잘 모르겠음.
+
 ## Write Your Try-Catch-Finally Statement First
 
 - try가 시작되는 순간 이거는 에러를 던질 수 있다는걸 의미. 에러를 던질 수 있는 거는 try부터 시작해.
@@ -92,55 +94,60 @@ private DeviceHandle getHandle(DeviceID id) {
 ## Define Exception Classes in Terms of a Caller’s Needs
 
 - exception을 던질때 제일 중요한 것은 caller가 어떻게 받느냐임.
-- api design을 할 경우 3rd party library를 사용할 때는 거기서 발생하는 에러를 감싸서 던지면 해당 라이브러리에 의존성을 최소화 하게 됨.
-```java
-// bad
-ACMEPort port = new ACMEPort(12);
-try {
-  port.open();
-} catch (DeviceResponseException e) {
-  reportPortError(e);
-  logger.log("Device response exception", e);
-} catch (ATM1212UnlockedException e) {
-  reportPortError(e);
-  logger.log("Unlock exception", e);
-} catch (GMXError e) {
-  reportPortError(e);
-  logger.log("Device response exception");
-}
-
-// good
-LocalPort port = new LocalPort(12);
-try {
-  port.open();
-} catch (PortDeviceFailure e) {
-  reportError(e);
-  logger.log(e.getMessage(), e);
-}
-
-public class LocalPort {
-  private ACMEPort innerPort;
-
-  public LocalPort(int portNumber) {
-    innerPort = new ACMEPort(portNumber);
+- 예를 들어서 api design을 할 경우 3rd party library를 사용할 때는 거기서 발생하는 에러를 감싸서 던지면 해당 라이브러리에 의존성을 최소화 하게 됨.
+  ```java
+  // bad
+  ACMEPort port = new ACMEPort(12);
+  try {
+    port.open();
+  } catch (DeviceResponseException e) {
+    reportPortError(e);
+    logger.log("Device response exception", e);
+  } catch (ATM1212UnlockedException e) {
+    reportPortError(e);
+    logger.log("Unlock exception", e);
+  } catch (GMXError e) {
+    reportPortError(e);
+    logger.log("Device response exception");
   }
 
-  public void open() {
-    // 한번 감싸
-    try {
-      innerPort.open();
-    } catch (DeviceResponseException e) {
-      throw new PortDeviceFailure(e);
-    } catch (ATM1212UnlockedException e) {
-      throw new PortDeviceFailure(e);
-    } catch (GMXError e) {
-      throw new PortDeviceFailure(e);
+  // good
+  LocalPort port = new LocalPort(12);
+  try {
+    port.open();
+  } catch (PortDeviceFailure e) {
+    reportError(e);
+    logger.log(e.getMessage(), e);
+  }
+
+  public class LocalPort {
+    private ACMEPort innerPort;
+
+    public LocalPort(int portNumber) {
+      innerPort = new ACMEPort(portNumber);
+    }
+
+    public void open() {
+      // 한번 감싸
+      try {
+        innerPort.open();
+      } catch (DeviceResponseException e) {
+        throw new PortDeviceFailure(e);
+      } catch (ATM1212UnlockedException e) {
+        throw new PortDeviceFailure(e);
+      } catch (GMXError e) {
+        throw new PortDeviceFailure(e);
+      }
     }
   }
-}
-```
+  ```
+- 예외 클래스에 포함된 정보로 오류를 구분해도 되는 경우는 예외 클래스가 하나만 있어도 충분. 한 예외는 잡아내고 다른 예외는 무시하도 괜찮은 경우라면 여러 예외 클래스를 사용.
 
 ## Define the Normal Flow
+
+TODO: 정리
+
+> [when to throw exception](https://www.google.com/search?client=firefox-b-d&q=when+to+throw+exception) 참고해서 언제 exception을 던질지도 생각해보는게 좋을듯.
 
 ## Don’t Return Null
 

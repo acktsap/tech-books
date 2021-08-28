@@ -135,11 +135,11 @@ public class Circle implements Shape {
 
 ## The Law of Demeter
 
-- class C의 method f는 다음의 method들만 호출 할 수 있다.
-  - C에 정의된 method
-  - method f에 의해 정의된 객체의 method
-  - method f에 인자로 들어온 객체의 method
-  - C instance에 field로 있는 객체의 method
+- class C의 method f는 객체의  다음의 method들만 호출 할 수 있다.
+  - C
+  - method f에 의해 정의된 객체
+  - method f에 인자로 들어온 객체
+  - C instance에 field로 있는 객체
 
 ### Train Wrecks
 
@@ -167,10 +167,10 @@ public class Circle implements Shape {
 
 - 위에 Train Wrecks 같은 경우 ctxt, options, scratchDir이 object라면 ctxt에 의미 있는 method를 추가하는게 좋음. 그렇다고 이름을 의식의 흐름으로 막 짓진 말고.
   ```java
-  // bad
+  // bad : 이름 대충 지음
   ctxt.getAbsolutePathOfScratchDirectoryOption();
 
-  // good
+  // good : 이름 잘 지음
   ctxt.createScratchFileStream();
   ```
 
@@ -221,7 +221,7 @@ public class Circle implements Shape {
 
 ### Active Record
 
-- DTO에서 `save`, `find`같은 navigational method가 있는 경우.
+- DTO에서 `save`, `find`같은 navigational method가 있는 경우. 즉, 가공해서 제공하는 getter.
 - 개발자들이 여기 business logic을 넣고는 하는데 좋지 않음. 그런거 보다 business logic을 하는 객체를 만들고 active record를 내부적으로 숨기는 식으로 하는게 좋음.
 
 ## Conclusion
